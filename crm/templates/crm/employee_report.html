@@ -1,0 +1,51 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}Performance Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0 text-navy fw-bold">Banker Performance</h4>
+    <div class="btn-group shadow-sm">
+        <button type="button" class="btn btn-light border text-muted active">Monthly</button>
+        <button type="button" class="btn btn-light border text-muted">Quarterly</button>
+        <button type="button" class="btn btn-light border text-muted">Yearly</button>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for emp in employees %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center p-4">
+                <div class="avatar-lg bg-navy text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow-sm"
+                    style="width: 70px; height: 70px; font-size: 1.5rem;">
+                    {{ emp.name|slice:":1"|upper }}
+                </div>
+                <h5 class="fw-bold text-dark mb-1">{{ emp.name }}</h5>
+                <p class="text-muted small mb-3">{{ emp.email }}</p>
+                <span class="badge bg-light text-dark border mb-4">Senior Banker</span>
+
+                <div class="row g-0 border-top pt-3">
+                    <div class="col-6 border-end">
+                        <h6 class="text-muted small text-uppercase fw-bold mb-1">Loans Disbursed</h6>
+                        <span class="fs-4 fw-bold text-navy">{{ emp.deals_closed }}</span>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-muted small text-uppercase fw-bold mb-1">Total Disbursed</h6>
+                        <span class="fs-4 fw-bold text-success">${{ emp.total_sales_amount|default:"0"|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 py-3">
+                <a href="#" class="btn btn-sm btn-outline-primary w-100">View Detailed Report</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-bar-chart-line display-4 text-muted mb-3 d-block"></i>
+        <p class="text-muted">No performance data available.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,157 @@
+﻿{% extends 'crm/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        padding: 20px;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card h6 {
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .stat-card h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .stat-card.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .stat-card.gold {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .stat-card.success {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .stat-card.danger {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
+
+    .icon-bg {
+        position: absolute;
+        right: -10px;
+        bottom: -10px;
+        font-size: 5rem;
+        opacity: 0.1;
+    }
+
+    .text-navy {
+        color: #0a2342 !important;
+    }
+</style>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary shadow-sm">
+            <h6>Total Applications</h6>
+            <h2>{{ total_applications_count }}</h2>
+            <i class="bi bi-people-fill icon-bg"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card gold shadow-sm">
+            <h6>Pending Docs</h6>
+            <h2>{{ pending_docs_count }}</h2>
+            <i class="bi bi-file-earmark-text-fill icon-bg"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card success shadow-sm">
+            <h6>Disbursed</h6>
+            <h2>{{ converted_count }}</h2>
+            <i class="bi bi-check-circle-fill icon-bg"></i>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card danger shadow-sm">
+            <h6>Follow Ups</h6>
+            <h2>{{ follow_ups.count }}</h2>
+            <i class="bi bi-telephone-fill icon-bg"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-navy fw-bold">Application Pipeline</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="pipelineChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-navy fw-bold">Today's Follow-ups</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for app in follow_ups|slice:":5" %}
+                    <a href="{% url 'application_update' app.pk %}" class="list-group-item list-group-item-action p-3">
+                        <h6 class="mb-0 fw-semibold">{{ app.name }}</h6>
+                        <small class="text-muted">{{ app.phone }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">No follow-ups pending!</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* eslint-disable */
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('pipelineChart').getContext('2d');
+        var newCount = Number("{{ pipeline_counts.New|default:0 }}");
+        var contactedCount = Number("{{ pipeline_counts.Contacted|default:0 }}");
+        var convertedCount = Number("{{ pipeline_counts.Converted|default:0 }}");
+        var rejectedCount = Number("{{ pipeline_counts.Rejected|default:0 }}");
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['New', 'Contacted', 'Disbursed', 'Rejected'],
+                datasets: [{
+                    label: 'Applications',
+                    data: [newCount, contactedCount, convertedCount, rejectedCount],
+                    backgroundColor: ['#3498db', '#f39c12', '#2ecc71', '#e74c3c'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    });
+</script>
+{% endblock %}

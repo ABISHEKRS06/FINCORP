@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinCore CRM - Banking & Finance</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-navy: #0a2342;
+            --secondary-navy: #16325c;
+            --accent-gold: #c5a059;
+            --accent-gold-hover: #b08d4b;
+            --bg-light: #f4f6f9;
+            --text-dark: #2c3e50;
+            --text-light: #ecf0f1;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            height: 100vh;
+            width: var(--sidebar-width);
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: linear-gradient(180deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+            padding-top: 0;
+            color: white;
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .brand {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar .brand i {
+            color: var(--accent-gold);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar a {
+            padding: 12px 25px;
+            text-decoration: none;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar a i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--accent-gold);
+        }
+
+        .sidebar a.active i {
+            color: var(--accent-gold);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .top-header {
+            background-color: white;
+            height: 70px;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-navy);
+            margin: 0;
+        }
+
+        .content-wrapper {
+            padding: 30px;
+            flex: 1;
+        }
+
+        /* Components */
+        .card {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #edf2f7;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--primary-navy);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-navy);
+            border-color: var(--primary-navy);
+            padding: 8px 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-navy);
+            border-color: var(--secondary-navy);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-navy);
+            border-color: var(--primary-navy);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-navy);
+            color: white;
+        }
+
+        .text-gold {
+            color: var(--accent-gold) !important;
+        }
+
+        .bg-navy {
+            background-color: var(--primary-navy) !important;
+        }
+
+        .text-navy {
+            color: var(--primary-navy) !important;
+        }
+
+        /* User Profile */
+        .user-profile .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-light);
+            color: var(--primary-navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid var(--accent-gold);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">
+            <i class="bi bi-bank2 me-2"></i> FinCore CRM
+        </div>
+        <div class="sidebar-menu">
+            <a href="{% url 'dashboard' %}"
+                class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            </a>
+
+            <div class="text-uppercase small text-white-50 px-4 mt-3 mb-2 fw-bold" style="font-size: 0.7rem;">
+                Applications</div>
+
+            <a href="{% url 'application_list' %}?status=New"
+                class="{% if request.GET.status == 'New' %}active{% endif %}">
+                <i class="bi bi-plus-circle"></i> New Applications
+            </a>
+            <a href="{% url 'application_list' %}?status=Contacted"
+                class="{% if request.GET.status == 'Contacted' %}active{% endif %}">
+                <i class="bi bi-telephone"></i> Follow-ups
+            </a>
+            <a href="{% url 'application_list' %}?status=Converted"
+                class="{% if request.GET.status == 'Converted' %}active{% endif %}">
+                <i class="bi bi-check-circle"></i> Disbursed Loans
+            </a>
+            <a href="{% url 'application_list' %}"
+                class="{% if request.resolver_match.url_name == 'application_list' and not request.GET.status %}active{% endif %}">
+                <i class="bi bi-list-ul"></i> All Applications
+            </a>
+
+            <div class="text-uppercase small text-white-50 px-4 mt-3 mb-2 fw-bold" style="font-size: 0.7rem;">Management
+            </div>
+
+            <a href="{% url 'loan_product_list' %}"
+                class="{% if 'loan_product' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-box-seam"></i> Types of Loan
+            </a>
+            <a href="{% url 'documents' %}"
+                class="{% if request.resolver_match.url_name == 'documents' %}active{% endif %}">
+                <i class="bi bi-file-earmark-text"></i> Documents
+            </a>
+            <a href="{% url 'employee_list' %}"
+                class="{% if 'employee' in request.resolver_match.url_name and 'report' not in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-people"></i> Bankers
+            </a>
+            <a href="{% url 'employee_report' %}"
+                class="{% if request.resolver_match.url_name == 'employee_report' %}active{% endif %}">
+                <i class="bi bi-bar-chart-line"></i> Reports
+            </a>
+            <a href="{% url 'settings' %}"
+                class="{% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+                <i class="bi bi-gear"></i> Settings
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-header">
+            <h4 class="page-title">{% block title %}Dashboard{% endblock %}</h4>
+            <div class="user-profile d-flex align-items-center">
+                <div class="text-end me-3 d-none d-sm-block">
+                    <div class="fw-bold text-dark small">Admin User</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Branch Manager</div>
+                </div>
+                <div class="avatar">
+                    AU
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 text-success"></i>{% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

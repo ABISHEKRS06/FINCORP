@@ -1,0 +1,184 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}
+{% if request.GET.status %}
+{{ request.GET.status }} Applications
+{% else %}
+All Applications
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0 text-navy fw-bold">
+        {% if request.GET.status %}
+        {{ request.GET.status }} Applications
+        {% else %}
+        All Applications
+        {% endif %}
+    </h4>
+    <div class="d-flex gap-2">
+        <input type="text" id="tableSearch" class="form-control" placeholder="Search applications..."
+            style="width: 250px;">
+        <a href="{% url 'application_create' %}" class="btn btn-primary text-nowrap">
+            <i class="bi bi-plus-lg me-2"></i>New Application
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="applicationsTable">
+                <thead class="bg-light text-uppercase small fw-bold text-muted">
+                    <tr>
+                        <th class="ps-4 py-3 cursor-pointer" onclick="sortTable(0)">Applicant Name <i
+                                class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="py-3 cursor-pointer" onclick="sortTable(1)">Phone <i
+                                class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="py-3 cursor-pointer" onclick="sortTable(2)">Loan Type <i
+                                class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="py-3 cursor-pointer" onclick="sortTable(3)">Amount <i
+                                class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="py-3 cursor-pointer" onclick="sortTable(4)">Status <i
+                                class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="py-3 cursor-pointer" onclick="sortTable(5)">Assigned Banker <i
+                                class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="py-3 cursor-pointer" onclick="sortTable(6)">Email <i
+                                class="bi bi-arrow-down-up small ms-1"></i></th>
+                        <th class="pe-4 py-3 text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">{{ app.name }}</div>
+                            <small class="text-muted" style="font-size: 0.75rem;">ID: #APP-{{ app.id|add:"1000"
+                                }}</small>
+                        </td>
+                        <td>{{ app.phone }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ app.loan_type }}</span></td>
+                        <td class="fw-bold text-dark" data-value="{{ app.amount }}">${{ app.amount|floatformat:0 }}</td>
+                        <td>
+                            {% if app.status == 'New' %}
+                            <span
+                                class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3">New</span>
+                            {% elif app.status == 'Contacted' %}
+                            <span
+                                class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">Contacted</span>
+                            {% elif app.status == 'Converted' %}
+                            <span
+                                class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">Disbursed</span>
+                            {% elif app.status == 'Rejected' %}
+                            <span
+                                class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3">Rejected</span>
+                            {% else %}
+                            <span
+                                class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3">{{
+                                app.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-secondary-subtle text-secondary rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                    style="width: 28px; height: 28px; font-size: 12px;">
+                                    {{ app.assigned_to.name|slice:":2"|upper }}
+                                </div>
+                                <span>{{ app.assigned_to.name }}</span>
+                            </div>
+                        </td>
+                        <td class="text-muted small">{{ app.email }}</td>
+                        <td class="pe-4 text-end">
+                            <a href="{% url 'application_update' app.pk %}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil-fill"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                            No applications found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search Functionality
+    document.getElementById('tableSearch').addEventListener('keyup', function () {
+        var searchValue = this.value.toLowerCase();
+        var table = document.getElementById('applicationsTable');
+        var rows = table.getElementsByTagName('tr');
+
+        for (var i = 1; i < rows.length; i++) {
+            var rowText = rows[i].textContent.toLowerCase();
+            if (rowText.indexOf(searchValue) > -1) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    });
+
+    // Sorting Functionality
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("applicationsTable");
+        switching = true;
+        dir = "asc";
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+
+                // Check if data-value attribute exists for numeric sorting
+                var xVal = x.getAttribute('data-value') ? parseFloat(x.getAttribute('data-value')) : x.innerHTML.toLowerCase();
+                var yVal = y.getAttribute('data-value') ? parseFloat(y.getAttribute('data-value')) : y.innerHTML.toLowerCase();
+
+                if (dir == "asc") {
+                    if (xVal > yVal) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (xVal < yVal) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .cursor-pointer:hover {
+        background-color: #e9ecef;
+    }
+</style>
+{% endblock %}

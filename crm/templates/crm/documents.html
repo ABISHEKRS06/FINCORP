@@ -1,0 +1,129 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}Document Management{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Upload Section -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0 fw-bold text-navy">Upload Document</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.application.id_for_label }}"
+                            class="form-label small text-muted fw-bold">Select Application</label>
+                        {{ form.application }}
+                        {% if form.application.errors %}<div class="text-danger small">{{ form.application.errors.0 }}
+                        </div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label small text-muted fw-bold">Document
+                            Title</label>
+                        <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}"
+                            class="form-control" placeholder="e.g. ID Proof, Salary Slip" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.file.id_for_label }}"
+                            class="form-label small text-muted fw-bold">File</label>
+                        <input type="file" name="{{ form.file.name }}" id="{{ form.file.id_for_label }}"
+                            class="form-control" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="{{ form.status.id_for_label }}"
+                            class="form-label small text-muted fw-bold">Status</label>
+                        <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}" class="form-select">
+                            {% for value, label in form.fields.status.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Upload Document</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document List -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold text-navy">Uploaded Documents</h6>
+                <span class="badge bg-light text-muted border">{{ documents|length }} Files</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="ps-4">Document</th>
+                            <th>Applicant</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-shape bg-light text-primary rounded p-2 me-3">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 text-dark fw-semibold" style="font-size: 0.9rem;">{{ doc.title
+                                            }}</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">PDF/JPG</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ doc.application.name }}</td>
+                            <td>{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if doc.status == 'Verified' %}
+                                <span
+                                    class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Verified</span>
+                                {% elif doc.status == 'Rejected' %}
+                                <span
+                                    class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">Rejected</span>
+                                {% else %}
+                                <span
+                                    class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{{ doc.file.url }}" target="_blank"
+                                    class="btn btn-sm btn-light text-muted border"><i class="bi bi-eye"></i> View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-folder2-open display-4 mb-3 d-block text-light"></i>
+                                No documents uploaded yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-select,
+    .form-control {
+        border-color: #dee2e6;
+    }
+
+    .form-select:focus,
+    .form-control:focus {
+        border-color: #0a2342;
+        box-shadow: 0 0 0 0.2rem rgba(10, 35, 66, 0.1);
+    }
+</style>
+{% endblock %}

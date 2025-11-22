@@ -1,0 +1,35 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}Import Applications{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-navy fw-bold">Import Applications from CSV</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    CSV should have headers: <strong>name, amount, assigned_to_email</strong>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="id_csv_file" class="form-label text-muted small text-uppercase fw-bold">Upload CSV
+                            File</label>
+                        <input type="file" name="csv_file" class="form-control" id="id_csv_file" accept=".csv" required>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'application_list' %}" class="btn btn-light border">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
