@@ -30,7 +30,7 @@
                         <td><span class="badge bg-success-subtle text-success border border-success-subtle">{{
                                 product.interest_rate }}%</span></td>
                         <td>{{ product.processing_fee }}%</td>
-                        <td>${{ product.min_amount|floatformat:0 }} - ${{ product.max_amount|floatformat:0 }}</td>
+                        <td>₹{{ product.min_amount|floatformat:0 }} - ₹{{ product.max_amount|floatformat:0 }}</td>
                         <td class="text-end pe-4">
                             <button class="btn btn-sm btn-light text-muted border"><i class="bi bi-pencil"></i>
                                 Edit</button>

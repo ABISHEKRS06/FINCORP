@@ -59,7 +59,7 @@ All Applications
                         </td>
                         <td>{{ app.phone }}</td>
                         <td><span class="badge bg-light text-dark border">{{ app.loan_type }}</span></td>
-                        <td class="fw-bold text-dark" data-value="{{ app.amount }}">${{ app.amount|floatformat:0 }}</td>
+                        <td class="fw-bold text-dark" data-value="{{ app.amount }}">₹{{ app.amount|floatformat:0 }}</td>
                         <td>
                             {% if app.status == 'New' %}
                             <span

@@ -32,7 +32,8 @@
                     </div>
                     <div class="col-6">
                         <h6 class="text-muted small text-uppercase fw-bold mb-1">Total Disbursed</h6>
-                        <span class="fs-4 fw-bold text-success">${{ emp.total_sales_amount|default:"0"|floatformat:0 }}</span>
+                        <span class="fs-4 fw-bold text-success">₹{{ emp.total_sales_amount|default:"0"|floatformat:0
+                            }}</span>
                     </div>
                 </div>
             </div>

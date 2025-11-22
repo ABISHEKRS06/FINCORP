@@ -51,7 +51,7 @@
                         <div class="col-md-6">
                             <label for="{{ form.min_amount.id_for_label }}" class="form-label">Minimum Amount</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">₹</span>
                                 <input type="number" name="{{ form.min_amount.name }}"
                                     id="{{ form.min_amount.id_for_label }}" class="form-control"
                                     value="{{ form.min_amount.value|default:'' }}" step="0.01" required>
@@ -63,7 +63,7 @@
                         <div class="col-md-6">
                             <label for="{{ form.max_amount.id_for_label }}" class="form-label">Maximum Amount</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">₹</span>
                                 <input type="number" name="{{ form.max_amount.name }}"
                                     id="{{ form.max_amount.id_for_label }}" class="form-control"
                                     value="{{ form.max_amount.value|default:'' }}" step="0.01" required>
