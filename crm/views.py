@@ -4,6 +4,52 @@ from .models import Employee, LoanApplication, Disbursement, ApplicationDocument
 from django.contrib import messages
 from .forms import LoanProductForm, LoanApplicationForm, ApplicationDocumentForm, CSVUploadForm, EmployeeForm
 
+from django.utils import timezone
+
+def dashboard(request):
+    today = timezone.now().date()
+    
+    # Summary Cards
+    total_applications_count = LoanApplication.objects.count()
+    new_today_count = LoanApplication.objects.filter(created_at__date=today).count()
+    converted_count = LoanApplication.objects.filter(status='Converted').count()
+    pending_docs_count = LoanApplication.objects.filter(document_status='Pending').count()
+    
+    # Pipeline Stages
+    pipeline_counts = {
+        'New': LoanApplication.objects.filter(status='New').count(),
+        'Contacted': LoanApplication.objects.filter(status='Contacted').count(),
+        'Follow_up': LoanApplication.objects.filter(status='Follow-up').count(),
+        'Verified': LoanApplication.objects.filter(status='Verified').count(),
+        'Converted': converted_count,
+        'Rejected': LoanApplication.objects.filter(status='Rejected').count(),
+    }
+    
+    # Follow-Ups
+    follow_ups = LoanApplication.objects.filter(status='Follow-up').order_by('-updated_at')[:5]
+    
+    # Application Table
+    recent_applications = LoanApplication.objects.all().order_by('-created_at')[:10]
+    
+    # Employee Performance
+    top_employees = Employee.objects.annotate(total_disbursed=Sum('disbursements__amount')).order_by('-total_disbursed')[:5]
+    
+    context = {
+        'total_applications_count': total_applications_count,
+        'new_today_count': new_today_count,
+        'converted_count': converted_count,
+        'pending_docs_count': pending_docs_count,
+        'pipeline_counts': pipeline_counts,
+        'follow_ups': follow_ups,
+        'recent_applications': recent_applications,
+        'top_employees': top_employees,
+    }
+    return render(request, 'crm/dashboard.html', context)
+
+def employee_list(request):
+    employees = Employee.objects.all()
+    return render(request, 'crm/employee_list.html', {'employees': employees})
+
 def employee_create(request):
     if request.method == 'POST':
         form = EmployeeForm(request.POST)
