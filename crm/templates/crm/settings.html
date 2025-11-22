@@ -11,13 +11,6 @@
                     data-bs-toggle="list">
                     <i class="bi bi-person me-2"></i> Profile Settings
                 </a>
-                <a href="#users" class="list-group-item list-group-item-action border-0 py-3" data-bs-toggle="list">
-                    <i class="bi bi-people me-2"></i> User Management
-                </a>
-                <a href="#notifications" class="list-group-item list-group-item-action border-0 py-3"
-                    data-bs-toggle="list">
-                    <i class="bi bi-bell me-2"></i> Notifications
-                </a>
                 <a href="#security" class="list-group-item list-group-item-action border-0 py-3" data-bs-toggle="list">
                     <i class="bi bi-shield-lock me-2"></i> Security
                 </a>
@@ -33,132 +26,22 @@
                         <h5 class="mb-0 text-navy fw-bold">Profile Settings</h5>
                     </div>
                     <div class="card-body p-4">
-                        <form>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update_profile">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label small text-muted fw-bold">First Name</label>
-                                    <input type="text" class="form-control" value="Admin">
+                                    <label class="form-label small text-muted fw-bold">Username</label>
+                                    <input type="text" class="form-control" value="{{ request.user.username }}"
+                                        disabled>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label small text-muted fw-bold">Last Name</label>
-                                    <input type="text" class="form-control" value="User">
+                                    <label class="form-label small text-muted fw-bold">Email</label>
+                                    <input type="email" class="form-control" name="email"
+                                        value="{{ request.user.email }}">
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label small text-muted fw-bold">Email Address</label>
-                                <input type="email" class="form-control" value="admin@fincore.com">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small text-muted fw-bold">Role</label>
-                                <input type="text" class="form-control" value="Branch Manager" disabled>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label small text-muted fw-bold">Bio</label>
-                                <textarea class="form-control"
-                                    rows="3">Senior Branch Manager with 10+ years of experience in retail banking.</textarea>
-                            </div>
-                            <button type="button" class="btn btn-primary">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- User Management -->
-            <div class="tab-pane fade" id="users">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-navy fw-bold">User Management</h5>
-                        <button class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> Add User</button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th class="ps-4 py-3">User</th>
-                                        <th>Role</th>
-                                        <th>Status</th>
-                                        <th>Last Active</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm bg-navy text-white rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px;">AU</div>
-                                                <div>
-                                                    <div class="fw-bold">Admin User</div>
-                                                    <small class="text-muted">admin@fincore.com</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-primary-subtle text-primary">Admin</span></td>
-                                        <td><span class="badge bg-success-subtle text-success">Active</span></td>
-                                        <td class="text-muted small">Just now</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-light border"><i
-                                                    class="bi bi-three-dots"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm bg-secondary text-white rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                    style="width: 32px; height: 32px;">JD</div>
-                                                <div>
-                                                    <div class="fw-bold">John Doe</div>
-                                                    <small class="text-muted">john@fincore.com</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-info-subtle text-info">Banker</span></td>
-                                        <td><span class="badge bg-success-subtle text-success">Active</span></td>
-                                        <td class="text-muted small">2 hours ago</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-light border"><i
-                                                    class="bi bi-three-dots"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Notifications -->
-            <div class="tab-pane fade" id="notifications">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0 text-navy fw-bold">Notification Preferences</h5>
-                    </div>
-                    <div class="card-body p-4">
-                        <form>
-                            <div class="mb-4">
-                                <h6 class="fw-bold mb-3">Email Notifications</h6>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" type="checkbox" id="newLead" checked>
-                                    <label class="form-check-label" for="newLead">New Application Assigned</label>
-                                </div>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" type="checkbox" id="docUpload" checked>
-                                    <label class="form-check-label" for="docUpload">Document Uploaded</label>
-                                </div>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" type="checkbox" id="dailyReport">
-                                    <label class="form-check-label" for="dailyReport">Daily Performance Report</label>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <h6 class="fw-bold mb-3">System Alerts</h6>
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" type="checkbox" id="sysMaint" checked>
-                                    <label class="form-check-label" for="sysMaint">System Maintenance</label>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-primary">Update Preferences</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </form>
                     </div>
                 </div>
@@ -171,22 +54,18 @@
                         <h5 class="mb-0 text-navy fw-bold">Security Settings</h5>
                     </div>
                     <div class="card-body p-4">
-                        <form>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="change_password">
                             <div class="mb-4">
-                                <label class="form-label small text-muted fw-bold">Current Password</label>
-                                <input type="password" class="form-control">
+                                <label class="form-label small text-muted fw-bold">New Password</label>
+                                <input type="password" class="form-control" name="new_password" required>
                             </div>
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted fw-bold">New Password</label>
-                                    <input type="password" class="form-control">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label small text-muted fw-bold">Confirm New Password</label>
-                                    <input type="password" class="form-control">
-                                </div>
+                            <div class="mb-4">
+                                <label class="form-label small text-muted fw-bold">Confirm New Password</label>
+                                <input type="password" class="form-control" name="confirm_password" required>
                             </div>
-                            <button type="button" class="btn btn-primary">Change Password</button>
+                            <button type="submit" class="btn btn-primary">Change Password</button>
                         </form>
                     </div>
                 </div>

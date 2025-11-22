@@ -1,8 +1,27 @@
 from django.db import models
 
 class Employee(models.Model):
+    DESIGNATION_CHOICES = [
+        ('Manager', 'Manager'),
+        ('Loan Officer', 'Loan Officer'),
+        ('Sales Executive', 'Sales Executive'),
+        ('Bank Teller', 'Bank Teller'),
+    ]
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    designation = models.CharField(max_length=50, choices=DESIGNATION_CHOICES, default='Loan Officer')
+
+    def __str__(self):
+        return f"{self.name} ({self.designation})"
+
+class LoanProduct(models.Model):
+    name = models.CharField(max_length=200)
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Interest Rate %", default=10.0)
+    processing_fee = models.DecimalField(max_digits=5, decimal_places=2, help_text="Processing Fee %", default=1.0)
+    min_amount = models.DecimalField(max_digits=12, decimal_places=2, default=10000)
+    max_amount = models.DecimalField(max_digits=12, decimal_places=2, default=1000000)
+    eligibility_criteria = models.TextField(blank=True, help_text="Eligibility rules")
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -15,14 +34,6 @@ class LoanApplication(models.Model):
         ('Verified', 'Verified'),
         ('Converted', 'Converted'),
         ('Rejected', 'Rejected'),
-    ]
-
-    LOAN_TYPE_CHOICES = [
-        ('Personal', 'Personal Loan'),
-        ('Home', 'Home Loan'),
-        ('Car', 'Car Loan'),
-        ('Education', 'Education Loan'),
-        ('Business', 'Business Loan'),
     ]
 
     EMPLOYMENT_TYPE_CHOICES = [
@@ -40,7 +51,8 @@ class LoanApplication(models.Model):
     name = models.CharField(max_length=200, verbose_name="Applicant Name")
     phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    loan_type = models.CharField(max_length=50, choices=LOAN_TYPE_CHOICES, default='Personal')
+    # Changed from CharField choices to ForeignKey to allow adding new types dynamically
+    loan_type = models.ForeignKey(LoanProduct, on_delete=models.SET_NULL, null=True, verbose_name="Loan Type")
     employment_type = models.CharField(max_length=50, choices=EMPLOYMENT_TYPE_CHOICES, default='Salaried')
     
     assigned_to = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='applications')
@@ -66,18 +78,6 @@ class ApplicationDocument(models.Model):
     def __str__(self):
         return f"{self.title} for {self.application.name}"
 
-class LoanProduct(models.Model):
-    name = models.CharField(max_length=200)
-    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Interest Rate %", default=10.0)
-    processing_fee = models.DecimalField(max_digits=5, decimal_places=2, help_text="Processing Fee %", default=1.0)
-    min_amount = models.DecimalField(max_digits=12, decimal_places=2, default=10000)
-    max_amount = models.DecimalField(max_digits=12, decimal_places=2, default=1000000)
-    eligibility_criteria = models.TextField(blank=True, help_text="Eligibility rules")
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
-
 from decimal import Decimal
 
 class Disbursement(models.Model):
@@ -101,5 +101,6 @@ def create_disbursement_on_conversion(sender, instance, created, **kwargs):
             Disbursement.objects.create(
                 application=instance,
                 banker=instance.assigned_to,
-                amount=instance.amount
+                amount=instance.amount,
+                product=instance.loan_type # Auto-assign product from application
             )

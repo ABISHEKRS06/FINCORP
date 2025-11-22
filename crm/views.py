@@ -2,71 +2,30 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum, Count
 from .models import Employee, LoanApplication, Disbursement, ApplicationDocument, LoanProduct
 from django.contrib import messages
-from .forms import LoanProductForm, LoanApplicationForm, ApplicationDocumentForm, CSVUploadForm
-from django.utils import timezone
-
-def dashboard(request):
-    today = timezone.now().date()
-    
-    # Summary Cards
-    total_applications_count = LoanApplication.objects.count()
-    new_today_count = LoanApplication.objects.filter(created_at__date=today).count()
-    converted_count = LoanApplication.objects.filter(status='Converted').count()
-    pending_docs_count = LoanApplication.objects.filter(document_status='Pending').count()
-    
-    # Pipeline Stages
-    pipeline_counts = {
-        'New': LoanApplication.objects.filter(status='New').count(),
-        'Contacted': LoanApplication.objects.filter(status='Contacted').count(),
-        'Follow_up': LoanApplication.objects.filter(status='Follow-up').count(),
-        'Verified': LoanApplication.objects.filter(status='Verified').count(),
-        'Converted': converted_count,
-        'Rejected': LoanApplication.objects.filter(status='Rejected').count(),
-    }
-    
-    # Follow-Ups
-    follow_ups = LoanApplication.objects.filter(status='Follow-up').order_by('-updated_at')[:5]
-    
-    # Application Table
-    recent_applications = LoanApplication.objects.all().order_by('-created_at')[:10]
-    
-    # Employee Performance
-    top_employees = Employee.objects.annotate(total_disbursed=Sum('disbursements__amount')).order_by('-total_disbursed')[:5]
-    
-    context = {
-        'total_applications_count': total_applications_count,
-        'new_today_count': new_today_count,
-        'converted_count': converted_count,
-        'pending_docs_count': pending_docs_count,
-        'pipeline_counts': pipeline_counts,
-        'follow_ups': follow_ups,
-        'recent_applications': recent_applications,
-        'top_employees': top_employees,
-    }
-    return render(request, 'crm/dashboard.html', context)
-
-def employee_list(request):
-    employees = Employee.objects.all()
-    return render(request, 'crm/employee_list.html', {'employees': employees})
+from .forms import LoanProductForm, LoanApplicationForm, ApplicationDocumentForm, CSVUploadForm, EmployeeForm
 
 def employee_create(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        Employee.objects.create(name=name, email=email)
-        messages.success(request, 'Employee created successfully.')
-        return redirect('employee_list')
-    return render(request, 'crm/employee_form.html')
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Employee created successfully.')
+            return redirect('employee_list')
+    else:
+        form = EmployeeForm()
+    return render(request, 'crm/employee_form.html', {'form': form})
 
 def employee_update(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
     if request.method == 'POST':
-        employee.name = request.POST.get('name')
-        employee.email = request.POST.get('email')
-        employee.save()
-        messages.success(request, 'Employee updated successfully.')
-        return redirect('employee_list')
-    return render(request, 'crm/employee_form.html', {'employee': employee})
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Employee updated successfully.')
+            return redirect('employee_list')
+    else:
+        form = EmployeeForm(instance=employee)
+    return render(request, 'crm/employee_form.html', {'form': form, 'employee': employee})
 
 def employee_delete(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
@@ -139,7 +98,36 @@ def documents(request):
     })
 
 # --- Settings View ---
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+
+@login_required
 def settings(request):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'update_profile':
+            email = request.POST.get('email')
+            user = request.user
+            user.email = email
+            user.save()
+            messages.success(request, 'Profile updated successfully.')
+            
+        elif action == 'change_password':
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+            
+            if new_password == confirm_password:
+                user = request.user
+                user.set_password(new_password)
+                user.save()
+                update_session_auth_hash(request, user) # Keep user logged in
+                messages.success(request, 'Password changed successfully.')
+            else:
+                messages.error(request, 'Passwords do not match.')
+                
+        return redirect('settings')
+        
     return render(request, 'crm/settings.html')
 
 # --- Product Views ---

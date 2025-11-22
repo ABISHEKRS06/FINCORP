@@ -1,5 +1,10 @@
 from django import forms
-from .models import LoanProduct, LoanApplication, ApplicationDocument
+from .models import LoanProduct, LoanApplication, ApplicationDocument, Employee
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['name', 'email', 'designation']
 
 class LoanProductForm(forms.ModelForm):
     class Meta:
