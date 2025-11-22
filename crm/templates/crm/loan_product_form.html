@@ -1,5 +1,4 @@
 {% extends 'crm/base.html' %}
-{# Template fixed at 2025-11-22 23:50 #}
 
 {% block title %}{% if form.instance.pk %}Edit Loan Type{% else %}Add Loan Type{% endif %}{% endblock %}
 
@@ -8,8 +7,9 @@
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3">
-                <h5 class="mb-0 fw-bold text-navy">{% if form.instance.pk %}Edit Loan Type{% else %}New Loan Type{%
-                    endif %}</h5>
+                <h5 class="mb-0 fw-bold text-navy">
+                    {% if form.instance.pk %}Edit Loan Type{% else %}New Loan Type{% endif %}
+                </h5>
             </div>
             <div class="card-body p-4">
                 <form method="post">
