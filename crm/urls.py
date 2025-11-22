@@ -16,4 +16,5 @@ urlpatterns = [
     path('documents/', views.documents, name='documents'),
     path('settings/', views.settings, name='settings'),
     path('reports/employees/', views.employee_sales_report, name='employee_report'),
+    path('setup-admin/', views.setup_admin, name='setup_admin'),
 ]

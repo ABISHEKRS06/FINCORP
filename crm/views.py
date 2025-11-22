@@ -205,3 +205,32 @@ def employee_sales_report(request):
         deals_closed=Count('disbursements')
     ).order_by('-total_sales_amount')
     return render(request, 'crm/employee_report.html', {'employees': employees})
+
+# --- Setup Admin (One-time use) ---
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def setup_admin(request):
+    """Create admin user - visit /setup-admin/ once to create the admin account"""
+    User = get_user_model()
+    
+    if User.objects.filter(username='admin').exists():
+        return HttpResponse("""
+            <h1>Admin Already Exists!</h1>
+            <p>Username: <strong>admin</strong></p>
+            <p>Go to <a href="/admin/">/admin/</a> to login</p>
+        """)
+    
+    User.objects.create_superuser(
+        username='admin',
+        email='admin@fincorp.com',
+        password='FinCorp@2025'
+    )
+    
+    return HttpResponse("""
+        <h1>Admin Created Successfully!</h1>
+        <p>Username: <strong>admin</strong></p>
+        <p>Password: <strong>FinCorp@2025</strong></p>
+        <p>Go to <a href="/admin/">/admin/</a> to login</p>
+        <p><strong>IMPORTANT:</strong> Change your password after first login!</p>
+    """)
