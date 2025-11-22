@@ -1,5 +1,4 @@
 {% extends 'crm/base.html' %}
-{# Fixed template syntax #}
 
 {% block title %}{% if form.instance.pk %}Edit Loan Type{% else %}Add Loan Type{% endif %}{% endblock %}
 
@@ -19,8 +18,9 @@
                         <label for="{{ form.name.id_for_label }}" class="form-label">Loan Type Name</label>
                         <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}"
                             class="form-control" value="{{ form.name.value|default:'' }}" required>
-                        {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors.0 }}</div>{% endif
-                        %}
+                        {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="row g-3 mb-4">
@@ -30,8 +30,9 @@
                             <input type="number" name="{{ form.interest_rate.name }}"
                                 id="{{ form.interest_rate.id_for_label }}" class="form-control"
                                 value="{{ form.interest_rate.value|default:'' }}" step="0.01" required>
-                            {% if form.interest_rate.errors %}<div class="text-danger small">{{
-                                form.interest_rate.errors.0 }}</div>{% endif %}
+                            {% if form.interest_rate.errors %}
+                            <div class="text-danger small">{{ form.interest_rate.errors.0 }}</div>
+                            {% endif %}
                         </div>
                         <div class="col-md-6">
                             <label for="{{ form.processing_fee.id_for_label }}" class="form-label">Processing Fee
@@ -39,8 +40,9 @@
                             <input type="number" name="{{ form.processing_fee.name }}"
                                 id="{{ form.processing_fee.id_for_label }}" class="form-control"
                                 value="{{ form.processing_fee.value|default:'' }}" step="0.01" required>
-                            {% if form.processing_fee.errors %}<div class="text-danger small">{{
-                                form.processing_fee.errors.0 }}</div>{% endif %}
+                            {% if form.processing_fee.errors %}
+                            <div class="text-danger small">{{ form.processing_fee.errors.0 }}</div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -53,8 +55,9 @@
                                     id="{{ form.min_amount.id_for_label }}" class="form-control"
                                     value="{{ form.min_amount.value|default:'' }}" step="0.01" required>
                             </div>
-                            {% if form.min_amount.errors %}<div class="text-danger small">{{ form.min_amount.errors.0 }}
-                            </div>{% endif %}
+                            {% if form.min_amount.errors %}
+                            <div class="text-danger small">{{ form.min_amount.errors.0 }}</div>
+                            {% endif %}
                         </div>
                         <div class="col-md-6">
                             <label for="{{ form.max_amount.id_for_label }}" class="form-label">Maximum Amount</label>
@@ -64,8 +67,9 @@
                                     id="{{ form.max_amount.id_for_label }}" class="form-control"
                                     value="{{ form.max_amount.value|default:'' }}" step="0.01" required>
                             </div>
-                            {% if form.max_amount.errors %}<div class="text-danger small">{{ form.max_amount.errors.0 }}
-                            </div>{% endif %}
+                            {% if form.max_amount.errors %}
+                            <div class="text-danger small">{{ form.max_amount.errors.0 }}</div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -75,16 +79,18 @@
                         <textarea name="{{ form.eligibility_criteria.name }}"
                             id="{{ form.eligibility_criteria.id_for_label }}" class="form-control"
                             rows="3">{{ form.eligibility_criteria.value|default:'' }}</textarea>
-                        {% if form.eligibility_criteria.errors %}<div class="text-danger small">{{
-                            form.eligibility_criteria.errors.0 }}</div>{% endif %}
+                        {% if form.eligibility_criteria.errors %}
+                        <div class="text-danger small">{{ form.eligibility_criteria.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-4">
                         <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
                         <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}"
                             class="form-control" rows="3">{{ form.description.value|default:'' }}</textarea>
-                        {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors.0 }}
-                        </div>{% endif %}
+                        {% if form.description.errors %}
+                        <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
