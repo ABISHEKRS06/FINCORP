@@ -15,7 +15,17 @@ class Employee(models.Model):
         return f"{self.name} ({self.designation})"
 
 class LoanProduct(models.Model):
-    name = models.CharField(max_length=200)
+    LOAN_TYPE_CHOICES = [
+        ('Personal Loan', 'Personal Loan'),
+        ('Home Loan', 'Home Loan'),
+        ('Car Loan', 'Car Loan'),
+        ('Gold Loan', 'Gold Loan'),
+        ('Education Loan', 'Education Loan'),
+        ('Business Loan', 'Business Loan'),
+        ('Mortgage Loan', 'Mortgage Loan'),
+        ('Credit Card', 'Credit Card'),
+    ]
+    name = models.CharField(max_length=200, choices=LOAN_TYPE_CHOICES)
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, help_text="Interest Rate %", default=10.0)
     processing_fee = models.DecimalField(max_digits=5, decimal_places=2, help_text="Processing Fee %", default=1.0)
     min_amount = models.DecimalField(max_digits=12, decimal_places=2, default=10000)
